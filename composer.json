@@ -1,0 +1,19 @@
+{
+    "name": "Z2Admin",
+    "description": "",
+    "authors": [
+        {
+            "name": "Rauye Rogiski",
+            "email": "rauye@outlook.com.br"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "ext-pdo": "*"
+    },
+    "autoload": {
+      "psr-4": {
+        "Z2Admin\\": "src/"
+      }
+    }
+}

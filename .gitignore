@@ -1,0 +1,5 @@
+composer.phar
+composer.json.save
+composer.lock
+vendor/
+.idea/
