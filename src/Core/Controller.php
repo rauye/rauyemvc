@@ -1,5 +1,5 @@
 <?php
-namespace Z2Admin\Controller;
+namespace RauyeMVC\Core;
 
 class Controller
 {

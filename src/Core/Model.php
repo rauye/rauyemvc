@@ -1,16 +1,28 @@
 <?php
 
-namespace Z2Admin\Core;
+namespace RauyeMVC\Core;
+
+use Cake\Utility\Inflector;
 
 class Model
 {
-    protected $_table = '';
+    protected $_table = null;
     protected static $_database;
 
     public function __construct()
     {
         self::$_database = new Database();
+        $this->setTableName();
         $this->id = null;
+    }
+
+    private function setTableName()
+    {
+        if (is_null($this->_table)) {
+            $parts = explode('\\', get_called_class());
+            $className = $parts[sizeof($parts) - 1];
+            $this->_table = Inflector::underscore($className);
+        }
     }
 
     protected static function getDatabase()
@@ -101,5 +113,29 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->prepare($query);
         return $stmt->execute();
+    }
+
+    public function __call($name, $arguments)
+    {
+        switch (substr(0, 3, $name)) {
+            case 'get':
+                $name = str_replace('get', '', $name);
+                $name = lcfirst($name);
+                $nameUnder = (string) Inflector::underscore($name);
+                if (isset($this->$nameUnder)) {
+                    return $this->$nameUnder;
+                }
+                break;
+            case 'set':
+                $name = str_replace('set', '', $name);
+                $name = lcfirst($name);
+                $nameUnder = (string) Inflector::underscore($name);
+                if (isset($this->$nameUnder)) {
+                    $this->$nameUnder = $arguments[0];
+                    return $this;
+                }
+                break;
+        }
+        return null;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Z2Admin\Core;
+namespace RauyeMVC\Core;
 
 class Session
 {
