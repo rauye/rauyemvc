@@ -1,6 +1,8 @@
 <?php
 
-namespace Z2Admin\Controller;
+namespace RauyeMVC\Controller;
+
+use RauyeMVC\Core\Controller;
 
 class Login extends Controller
 {

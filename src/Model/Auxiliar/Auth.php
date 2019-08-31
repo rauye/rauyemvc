@@ -1,9 +1,9 @@
 <?php
 
-namespace Z2Admin\Model\Auxiliar;
+namespace RauyeMVC\Model\Auxiliar;
 
-use Z2Admin\Core\Session;
-use Z2Admin\Model\Usuario;
+use RauyeMVC\Core\Session;
+use RauyeMVC\Model\Usuario;
 
 class Auth
 {

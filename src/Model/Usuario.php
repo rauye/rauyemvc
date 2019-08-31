@@ -1,8 +1,8 @@
 <?php
 
-namespace Z2Admin\Model;
+namespace RauyeMVC\Model;
 
-use Z2Admin\Core\Model;
+use RauyeMVC\Core\Model;
 
 /**
  * Class Usuario
@@ -11,9 +11,8 @@ use Z2Admin\Core\Model;
  * @property string usuario
  * @property string senha
  * @property string login_token
- * @package Z2Admin\Model
+ * @package RauyeMVC\Model
  */
 class Usuario extends Model
 {
-    protected $_table = 'usuario';
 }

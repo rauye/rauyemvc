@@ -5,7 +5,7 @@
 define('DB_HOST', 'localhost');
 define('DB_USER', 'rauye');
 define('DB_PASS', '');
-define('DB_NAME', 'dbname');
+define('DB_NAME', 'rauyemvc');
 
 /**
  * Configurações do MVC

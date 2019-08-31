@@ -19,7 +19,7 @@ if (empty($page)) {
     $page = __DEFAULT_CONTROLLER__;
     $action = 'index';
 }
-$controller = '\Z2Admin\Controller\\' . ucfirst($page);
+$controller = '\RauyeMVC\Controller\\' . ucfirst($page);
 
 try {
     $c = new $controller();
@@ -32,12 +32,3 @@ try {
 } catch (Error $e) {
     exit('<h1>Action não encontrada.</h1>'.$e->getMessage());
 }
-
-
-
-
-//list( $controller, $function, $params ) = explode( '/', $uri, 3 );
-//$params = explode( '/', $uri );
-//RewriteCond %{REQUEST_FILENAME} !-f
-//RewriteCond %{REQUEST_FILENAME} !-d
-//RewriteRule ^(.*)$ mvc.php [L,NS]

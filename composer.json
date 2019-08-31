@@ -1,19 +1,20 @@
 {
-    "name": "Z2Admin",
-    "description": "",
-    "authors": [
-        {
-            "name": "Rauye Rogiski",
-            "email": "rauye@outlook.com.br"
-        }
-    ],
-    "require": {
-        "php": ">=7.0",
-        "ext-pdo": "*"
-    },
-    "autoload": {
-      "psr-4": {
-        "Z2Admin\\": "src/"
-      }
+  "name": "RauyeMVC",
+  "description": "",
+  "authors": [
+    {
+      "name": "Rauye Rogiski",
+      "email": "rauye@outlook.com.br"
     }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "ext-pdo": "*",
+    "cakephp/cakephp": "^3.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "RauyeMVC\\": "src/"
+    }
+  }
 }
