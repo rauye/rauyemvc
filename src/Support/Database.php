@@ -1,6 +1,6 @@
 <?php
 
-namespace RauyeMVC\Core;
+namespace RauyeMVC\Support;
 
 class Database
 {
