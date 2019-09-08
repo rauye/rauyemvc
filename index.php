@@ -1,8 +1,10 @@
 <?php
+
+use \RauyeMVC\Config;
+
 header('Content-Type: text/html; charset=utf-8');
 
 require 'vendor/autoload.php';
-require 'config.php';
 
 if (__DEBUG__) {
     ini_set('display_errors', 'On');
@@ -16,10 +18,10 @@ function toCamelCase($string) {
 $page = toCamelCase($_GET['page'] ?? '');
 $action = toCamelCase($_GET['action'] ?? 'index');
 if (empty($page)) {
-    $page = __DEFAULT_CONTROLLER__;
+    $page = Config::$DEFAULT_CONTROLLER;
     $action = 'index';
 }
-$controller = '\RauyeMVC\Controller\\' . ucfirst($page);
+$controller = '\\' . Config::$PROJECT_VENDOR_NAME . '\Controller\\' . ucfirst($page);
 
 try {
     $c = new $controller();

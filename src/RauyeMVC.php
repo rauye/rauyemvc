@@ -2,6 +2,8 @@
 
 namespace RauyeMVC;
 
+use RauyeMVC\Config;
+
 class RauyeMVC
 {
     public static function getIndex() {
