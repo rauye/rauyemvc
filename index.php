@@ -6,7 +6,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 require 'vendor/autoload.php';
 
-if (__DEBUG__) {
+if (Config::$DEBUG) {
     ini_set('display_errors', 'On');
 }
 

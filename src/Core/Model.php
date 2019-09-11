@@ -3,6 +3,7 @@
 namespace RauyeMVC\Core;
 
 use Cake\Utility\Inflector;
+use RauyeMVC\Support\Database;
 
 class Model
 {
