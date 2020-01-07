@@ -11,10 +11,13 @@ class Request
         $this->data = (object) $_REQUEST;
     }
 
-    public function input($name, $default)
+    public function input($name, $default = null)
     {
-        if (is_null($this->data->$name) and !is_null($default)) {
-            return $default;
+        if (!isset($this->data->$name)) {
+            if (!is_null($default)) {
+                return $default;
+            }
+            return null;
         }
         return $this->data->$name;
     }

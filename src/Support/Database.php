@@ -2,6 +2,8 @@
 
 namespace RauyeMVC\Support;
 
+use RauyeMVC\Config;
+
 class Database
 {
     /**
@@ -13,7 +15,7 @@ class Database
     {
         if (is_null(self::$conn)) {
             try {
-                $conn = new \PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME, DB_USER, DB_PASS);
+                $conn = new \PDO("mysql:host=".Config::$DATABASE_HOST.";dbname=".Config::$DATABASE_NAME, Config::$DATABASE_USER, Config::$DATABASE_PASS);
                 $conn->query("SET NAMES 'utf8'");
                 $conn->query('SET character_set_connection=utf8');
                 $conn->query('SET character_set_client=utf8');

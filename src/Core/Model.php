@@ -34,15 +34,16 @@ class Model
         return self::$_database;
     }
 
-    public function getAll($where = '')
+    public static function getAll($where = '')
     {
-        $conn = (self::getDatabase())::getConn();
-        $stmt = $conn->prepare('SELECT * FROM ' . $this->_table . ' ' . $where);
+        $self = new static();
+        $conn = ($self::getDatabase())::getConn();
+        $stmt = $conn->prepare('SELECT * FROM ' . $self->_table . ' ' . $where);
         $stmt->execute();
         $rows = (object) $stmt->fetchAll();
         $obj = [];
         foreach ($rows as $row) {
-            $that = $this;
+            $that = clone $self;
             foreach ($row as $k => $v) {
                 $that->$k = $v;
             }
@@ -51,6 +52,11 @@ class Model
         return $obj;
     }
 
+    /**
+     * @param string $where
+     * @param array $bindArr
+     * @return mixed
+     */
     public static function getFirst($where = '1=1', $bindArr = [])
     {
         $conn = (self::getDatabase())::getConn();
@@ -59,6 +65,9 @@ class Model
         $stmt = $conn->prepare('SELECT * FROM ' . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
         $stmt->execute($bindArr);
         $row = (object) $stmt->fetch();
+        if (is_null($row) or isset($row->scalar)) {
+            return null;
+        }
         foreach ($row as $k => $v) {
             $db->$k = $v;
         }
@@ -114,6 +123,16 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->prepare($query);
         return $stmt->execute();
+    }
+
+    public function Delete()
+    {
+        $where = 'id = '.$this->id;
+        unset($this->id);
+        $query = "DELETE FROM " . $this->_table . " WHERE " . $where;
+        $conn = (self::getDatabase())::getConn();
+        $stmt = $conn->query($query);
+        return $this;
     }
 
     public function __call($name, $arguments)

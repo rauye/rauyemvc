@@ -3,9 +3,24 @@ namespace RauyeMVC\Core;
 
 class Controller
 {
+    private $variables = [];
+
     public function index()
     {
         echo 'Esse é o controller padrão';
+    }
+
+    public function set($name, $value)
+    {
+        array_push($this->variables, [$name, $value]);
+    }
+
+    private function declareVariables()
+    {
+        foreach ($this->variables as $variable) {
+            ${$variable[0]} = $variable[1];
+        }
+        ${'canais'} = 'sdfds';
     }
 
     public function loadView($view = null, $includes = true)
@@ -20,12 +35,25 @@ class Controller
             exit('<h1>View não encontrada.</h1>');
         }
 
+        // Declare variables
+        foreach ($this->variables as $variable) {
+            ${$variable[0]} = $variable[1];
+        }
+        $this->variables = [];
+
         if ($includes) {
             require_once 'src/View/_templates/header.php';
         }
+
         require_once $viewFilename;
         if ($includes) {
             require_once 'src/View/_templates/footer.php';
         }
+    }
+
+    public function redirect($url)
+    {
+        header('Location: '. $url);
+        die;
     }
 }
