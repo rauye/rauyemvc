@@ -10,7 +10,8 @@
   "require": {
     "php": ">=7.0",
     "ext-pdo": "*",
-    "cakephp/cakephp": "^3.8"
+    "cakephp/cakephp": "^3.8",
+    "php-curl-class/php-curl-class": "^8.8"
   },
   "autoload": {
     "psr-4": {
