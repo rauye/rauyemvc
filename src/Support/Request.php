@@ -31,4 +31,11 @@ class Request
     {
         return $this->data;
     }
+
+    public static function createFromGlobals()
+    {
+        $request = new Request();
+        $request->data = (object) $_REQUEST;
+        return $request;
+    }
 }

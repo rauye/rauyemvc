@@ -25,7 +25,12 @@ class Controller
 
     public function loadView($view = null, $includes = true)
     {
-        $c = strtolower(explode('\Controller\\', get_called_class())[1]);
+        $c = strtolower(
+            explode(
+                'Controller',
+                explode('\Controller\\', get_called_class())[1]
+            )[0]
+        );
 
         is_null($view) and $view = debug_backtrace()[1]['function'];
         ($view == 'index') and $view = $c;

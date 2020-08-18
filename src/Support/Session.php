@@ -6,8 +6,7 @@ class Session
 {
     public function __construct()
     {
-        $self = new static();
-        $self::start();
+        self::start();
     }
 
     private static function checkStarted()
@@ -33,7 +32,7 @@ class Session
     public static function get($name)
     {
         self::start();
-        return $_SESSION[$name];
+        return $_SESSION[$name] ?? null;
     }
 
     public static function destroy()

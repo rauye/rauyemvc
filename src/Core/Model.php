@@ -55,7 +55,7 @@ class Model
     /**
      * @param string $where
      * @param array $bindArr
-     * @return mixed
+     * @return self
      */
     public static function getFirst($where = '1=1', $bindArr = [])
     {
@@ -74,6 +74,10 @@ class Model
         return $db;
     }
 
+    /**
+     * @param $id
+     * @return self
+     */
     public static function getFirstId($id)
     {
         return self::getFirst('id = ?', [$id]);
@@ -87,7 +91,7 @@ class Model
         return $this->Update();
     }
 
-    private function Insert()
+    public function Insert()
     {
         $ks = '';
         $vs = '';
@@ -103,18 +107,23 @@ class Model
         $vs = rtrim($vs, ',');
         $query = "INSERT INTO " . $this->_table . " (" . $ks . ") VALUES (" . $vs . ")";
         $conn = (self::getDatabase())::getConn();
-        return $conn->query($query);
+        $result = $conn->query($query);
+
+        $result and $this->id = $conn->lastInsertId();
+        return $this;
     }
 
-    private function Update()
+    public function Update()
     {
-        $where = 'id = '.$this->id;
+        $id = $this->id;
         unset($this->id);
+        $where = 'id = '.$id;
         $query = "UPDATE " . $this->_table . " SET ";
 
         $attr = get_object_vars($this);
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
+                if (is_null($v)) continue;
                 $query .= $k . "='" . $v . "',";
             }
         }
@@ -122,7 +131,15 @@ class Model
 
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->prepare($query);
-        return $stmt->execute();
+
+        $this->id = $id;
+
+        try {
+            $stmt->execute();
+        } catch (\Exception $ex) {
+            var_dump('Erro executando a query: ' . $query);
+            throw $ex;
+        }
     }
 
     public function Delete()
