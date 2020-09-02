@@ -55,7 +55,7 @@ class Model
     /**
      * @param string $where
      * @param array $bindArr
-     * @return self
+     * @return $this
      */
     public static function getFirst($where = '1=1', $bindArr = [])
     {
@@ -76,7 +76,7 @@ class Model
 
     /**
      * @param $id
-     * @return self
+     * @return $this
      */
     public static function getFirstId($id)
     {
