@@ -1,6 +1,7 @@
 <?php
 
 use \RauyeMVC\Config;
+use \Illuminate\Http\Request;
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -53,7 +54,7 @@ try {
     $params = $r->getParameters();
     if (isset($params[0])) {
         if ($params[0]->name == 'request') {
-            $request = \RauyeMVC\Support\Request::createFromGlobals();
+            $request = Request::createFromGlobals();
             if (isset($params[1])) {
                 $c->$action($request, $param);
             } else {
