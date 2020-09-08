@@ -1,32 +1,19 @@
 <?php
 
-use \RauyeMVC\Config;
-use \Illuminate\Http\Request;
+use Illuminate\Http\Request;
+use RauyeMVC\Config;
+use RauyeMVC\Core\Controller;
 
 header('Content-Type: text/html; charset=utf-8');
 
 require 'vendor/autoload.php';
 
-if (Config::$DEBUG) {
-    ini_set('display_errors', true);
-} else {
-    ini_set('display_errors', false);
-}
+ini_set('display_errors', Config::$DEBUG);
 
-function toCamelCase($string) {
+function toCamelCase($string)
+{
     $string = str_replace('-', ' ', $string);
     return str_replace(' ', '', lcfirst(ucwords($string)));
-}
-
-function showError($e)
-{
-    echo '<h1>RauyeMVC</h1>';
-    echo '<h2 style="color: red;">Erro interno 500</h2>';
-    echo $e->getMessage() . "\n\n";
-    echo '<pre><div style="border: 1px solid #ccc; padding: 10px;width: 98%;white-space: break-spaces;">';
-    debug_print_backtrace();
-    echo '</div>';
-    http_response_code(500);die;
 }
 
 $page = toCamelCase($_GET['page'] ?? '');
@@ -44,9 +31,8 @@ try {
     $c = new $controller();
 } catch (Error $e) {
     if (strpos($e->getMessage(), "Class '$controller' not found") !== false) {
-        exit('<h1>RauyeMVC</h1><h2>Controller não encontrado.</h2>'.$e->getMessage());
+        Controller::loadViewError(404, $e);
     }
-    showError($e);
 }
 
 try {
@@ -67,8 +53,17 @@ try {
         $c->$action();
     }
 } catch (Error $e) {
-    if (strpos($e->getMessage(), 'Call to undefined method ' . ltrim($controller, "\\")) !== false) {
-        exit('<h1>RauyeMVC</h1><h2>Action não encontrada.</h2>'.$e->getMessage());
+    $re = '/Call to undefined method (.*)/m';
+    preg_match_all($re, $e->getMessage(), $matches, PREG_SET_ORDER, 0);
+    if ($matches === false) {
+        Controller::loadViewError(400, $ex);
     }
-    showError($e);
+    Controller::loadViewError(500, $ex);
+} catch (Exception $ex) {
+    $re = '/Method (.*) does not exist/m';
+    preg_match_all($re, $ex->getMessage(), $matches, PREG_SET_ORDER, 0);
+    if ($matches === false) {
+        Controller::loadViewError(400, $ex);
+    }
+    Controller::loadViewError(500, $ex);
 }

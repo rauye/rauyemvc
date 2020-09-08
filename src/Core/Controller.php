@@ -1,6 +1,8 @@
 <?php
 namespace RauyeMVC\Core;
 
+use RauyeMVC\Config;
+
 class Controller
 {
     private $variables = [];
@@ -58,7 +60,23 @@ class Controller
 
     public function redirect($url)
     {
-        header('Location: '. $url);
+        header('Location: ' . $url);
+        die;
+    }
+
+    public static function loadViewError(int $error = 500, $exception = null)
+    {
+        $debugContent = '';
+        if (Config::$DEBUG and !is_null($exception)) {
+            /** @var \Exception $exception */
+            ob_start();
+            print_r($exception->getMessage());
+            print_r($exception->getTraceAsString());
+//            debug_print_backtrace();
+            $debugContent = '<pre>' . ob_get_clean() . '</pre>';
+        }
+        require_once "src/View/_templates/errors/{$error}.php";
+        http_response_code($error);
         die;
     }
 }
