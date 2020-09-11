@@ -56,9 +56,9 @@ try {
     $re = '/Call to undefined method (.*)/m';
     preg_match_all($re, $e->getMessage(), $matches, PREG_SET_ORDER, 0);
     if ($matches === false) {
-        Controller::loadViewError(400, $ex);
+        Controller::loadViewError(400, $e);
     }
-    Controller::loadViewError(500, $ex);
+    Controller::loadViewError(500, $e);
 } catch (Exception $ex) {
     $re = '/Method (.*) does not exist/m';
     preg_match_all($re, $ex->getMessage(), $matches, PREG_SET_ORDER, 0);
