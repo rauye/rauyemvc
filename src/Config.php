@@ -13,4 +13,7 @@ class Config
 
     public static $PROJECT_VENDOR_NAME = '';
     public static $DEFAULT_CONTROLLER = '';
+    public static $TRANSLATE_MODEL;
+    public static $LANGUAGE_CODE = 'pt_br';
+    public static $LANGUAGE = 'pt_br';
 }

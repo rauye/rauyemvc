@@ -16,6 +16,26 @@ function toCamelCase($string)
     return str_replace(' ', '', lcfirst(ucwords($string)));
 }
 
+function t(string $string)
+{
+    if (!is_null(Config::$TRANSLATE_MODEL)) {
+        $modelName = Config::$TRANSLATE_MODEL;
+        $model = new $modelName();
+        /** @var \RauyeMVC\Core\Model $model */
+        $model = $model::getFirst('value = ?', $string);
+        if (is_null($model)) {
+            $langCode = Config::$LANGUAGE_CODE;
+            $model = new $modelName();
+            $model->value = $string;
+            $model->$langCode = $string;
+            $model->Save();
+        }
+        $lang = Config::$LANGUAGE;
+        return $model->$lang ?? $model->value;
+    }
+    return $string;
+}
+
 $page = toCamelCase($_GET['page'] ?? '');
 $action = toCamelCase($_GET['action'] ?? 'index');
 $param = $_GET['param'] ?? null;

@@ -54,7 +54,7 @@ class Model
 
     /**
      * @param string $where
-     * @param array $bindArr
+     * @param array|string $bindArr
      * @return $this
      */
     public static function getFirst($where = '1=1', $bindArr = [])
@@ -63,7 +63,11 @@ class Model
         $class = get_called_class();
         $db = new $class();
         $stmt = $conn->prepare('SELECT * FROM ' . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
-        $stmt->execute($bindArr);
+        if (is_string($bindArr)) {
+            $stmt->execute([$bindArr]);
+        } else {
+            $stmt->execute($bindArr);
+        }
         $row = (object) $stmt->fetch();
         if (is_null($row) or isset($row->scalar)) {
             return null;
