@@ -12,7 +12,8 @@
     "ext-pdo": "*",
     "cakephp/cakephp": "*",
     "php-curl-class/php-curl-class": "^8.8",
-    "illuminate/http": "^7.27"
+    "illuminate/http": "^7.27",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
