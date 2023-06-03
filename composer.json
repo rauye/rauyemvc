@@ -10,7 +10,7 @@
   "require": {
     "php": ">=7.0",
     "ext-pdo": "*",
-    "cakephp/cakephp": "^3.8",
+    "cakephp/cakephp": "*",
     "php-curl-class/php-curl-class": "^8.8",
     "illuminate/http": "^7.27"
   },
