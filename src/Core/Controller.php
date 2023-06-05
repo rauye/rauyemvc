@@ -7,11 +7,6 @@ class Controller
 {
     private $variables = [];
 
-    public function index()
-    {
-        echo 'Esse é o controller padrão';
-    }
-
     public function set($name, $value)
     {
         array_push($this->variables, [$name, $value]);
