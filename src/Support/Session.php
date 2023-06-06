@@ -37,7 +37,7 @@ class Session
 
     public static function destroy()
     {
-        self::checkStarted() or session_destroy();
+        self::checkStarted() and session_destroy();
         return true;
     }
 }
