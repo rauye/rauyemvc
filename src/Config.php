@@ -10,6 +10,7 @@ class Config
     public static $DATABASE_USER;
     public static $DATABASE_PASS;
     public static $DATABASE_NAME;
+    public static $DATABASE_CHARSET = 'utf8';
 
     public static $PROJECT_VENDOR_NAME = '';
     public static $DEFAULT_CONTROLLER = '';

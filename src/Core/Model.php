@@ -7,15 +7,16 @@ use RauyeMVC\Support\Database;
 
 class Model
 {
-    protected $_idField = 'id';
+    protected static $_idField = 'id';
     protected $_table = null;
     protected static $_database;
+    protected $_dbname;
 
     public function __construct()
     {
         self::$_database = new Database();
         $this->setTableName();
-        $this->$_idField = null;
+        $this->{static::$_idField} = null;
     }
 
     private function setTableName()
@@ -29,22 +30,23 @@ class Model
 
     protected static function getDatabase()
     {
-        if (is_null(self::$_database)) {
-            self::$_database = new Database();
+        if (is_null(static::$_database)) {
+            static::$_database = new Database();
         }
-        return self::$_database;
+        return static::$_database;
     }
 
     public static function getAll($where = '')
     {
-        $self = new static();
-        $conn = ($self::getDatabase())::getConn();
-        $stmt = $conn->prepare('SELECT * FROM ' . $self->_table . ' ' . $where);
+        $class = get_called_class();
+        $db = new $class();
+        $conn = ($db::getDatabase())::getConn();
+        $stmt = $conn->prepare('SELECT * FROM ' . (($db->_dbname . '.') ?: '') . $db->_table . ' WHERE ' . $where);
         $stmt->execute();
         $rows = (object) $stmt->fetchAll();
         $obj = [];
         foreach ($rows as $row) {
-            $that = clone $self;
+            $that = clone $db;
             foreach ($row as $k => $v) {
                 $that->$k = $v;
             }
@@ -63,7 +65,7 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $class = get_called_class();
         $db = new $class();
-        $stmt = $conn->prepare('SELECT * FROM ' . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
+        $stmt = $conn->prepare('SELECT * FROM ' . (($db->_dbname . '.') ?: '') . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
         if (is_string($bindArr)) {
             $stmt->execute([$bindArr]);
         } else {
@@ -85,12 +87,12 @@ class Model
      */
     public static function getFirstId($id)
     {
-        return self::getFirst($_idField . ' = ?', [$id]);
+        return self::getFirst(static::$_idField . ' = ?', [$id]);
     }
 
     public function Save()
     {
-        if (is_null($this->$_idField)) {
+        if (is_null(static::$_idField)) {
             return $this->Insert();
         }
         return $this->Update();
@@ -100,7 +102,7 @@ class Model
     {
         $ks = '';
         $vs = '';
-        unset($this->$_idField);
+        unset($this->{static::$_idField});
         $attr = get_object_vars($this);
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
@@ -114,15 +116,15 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $result = $conn->query($query);
 
-        $result and $this->$_idField = $conn->lastInsertId();
+        $result and $this->{static::$_idField} = $conn->lastInsertId();
         return $this;
     }
 
     public function Update()
     {
-        $id = $this->$_idField;
-        unset($this->$_idField);
-        $where = $this->$_idField . ' = '.$id;
+        $id = $this->{static::$_idField};
+        unset($this->{static::$_idField});
+        $where = $this->{static::$_idField} . ' = '.$id;
         $query = "UPDATE " . $this->_table . " SET ";
 
         $attr = get_object_vars($this);
@@ -137,7 +139,7 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->prepare($query);
 
-        $this->$_idField = $id;
+        $this->{static::$_idField} = $id;
 
         try {
             $stmt->execute();
@@ -149,8 +151,8 @@ class Model
 
     public function Delete()
     {
-        $where = $this->$_idField . ' = ' . $this->$_idField;
-        unset($this->$_idField);
+        $where = $this->{static::$_idField} . ' = ' . $this->{static::$_idField};
+        unset($this->{static::$_idField});
         $query = "DELETE FROM " . $this->_table . " WHERE " . $where;
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->query($query);
