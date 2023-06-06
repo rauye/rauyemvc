@@ -7,6 +7,7 @@ use RauyeMVC\Support\Database;
 
 class Model
 {
+    protected $_idField = 'id';
     protected $_table = null;
     protected static $_database;
 
@@ -14,7 +15,7 @@ class Model
     {
         self::$_database = new Database();
         $this->setTableName();
-        $this->id = null;
+        $this->$_idField = null;
     }
 
     private function setTableName()
@@ -84,12 +85,12 @@ class Model
      */
     public static function getFirstId($id)
     {
-        return self::getFirst('id = ?', [$id]);
+        return self::getFirst($_idField . ' = ?', [$id]);
     }
 
     public function Save()
     {
-        if (is_null($this->id)) {
+        if (is_null($this->$_idField)) {
             return $this->Insert();
         }
         return $this->Update();
@@ -99,7 +100,7 @@ class Model
     {
         $ks = '';
         $vs = '';
-        unset($this->id);
+        unset($this->$_idField);
         $attr = get_object_vars($this);
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
@@ -113,15 +114,15 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $result = $conn->query($query);
 
-        $result and $this->id = $conn->lastInsertId();
+        $result and $this->$_idField = $conn->lastInsertId();
         return $this;
     }
 
     public function Update()
     {
-        $id = $this->id;
-        unset($this->id);
-        $where = 'id = '.$id;
+        $id = $this->$_idField;
+        unset($this->$_idField);
+        $where = $this->$_idField . ' = '.$id;
         $query = "UPDATE " . $this->_table . " SET ";
 
         $attr = get_object_vars($this);
@@ -136,7 +137,7 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->prepare($query);
 
-        $this->id = $id;
+        $this->$_idField = $id;
 
         try {
             $stmt->execute();
@@ -148,8 +149,8 @@ class Model
 
     public function Delete()
     {
-        $where = 'id = '.$this->id;
-        unset($this->id);
+        $where = $this->$_idField . ' = ' . $this->$_idField;
+        unset($this->$_idField);
         $query = "DELETE FROM " . $this->_table . " WHERE " . $where;
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->query($query);
