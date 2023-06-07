@@ -47,6 +47,10 @@ if (empty($page)) {
 }
 $controller = '\\' . Config::$PROJECT_VENDOR_NAME . '\Controller\\' . ucfirst($page) . 'Controller';
 
+if (!file_exists($controller)) {
+    Controller::loadViewError(404, null, "Controller " . ucfirst($page) . "Controller não encontrado");
+}
+
 try {
     $c = new $controller();
 } catch (Error $e) {

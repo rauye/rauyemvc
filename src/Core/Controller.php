@@ -59,7 +59,7 @@ class Controller
         die;
     }
 
-    public static function loadViewError(int $error = 500, $exception = null)
+    public static function loadViewError(int $error = 500, $exception = null, $errorMessage = null)
     {
         $debugContent = '';
         if (Config::$DEBUG and !is_null($exception)) {
@@ -70,6 +70,7 @@ class Controller
 //            debug_print_backtrace();
             $debugContent = '<pre>' . ob_get_clean() . '</pre>';
         }
+        $message = $errorMessage;
         require_once "src/View/_templates/errors/{$error}.php";
         http_response_code($error);
         die;
