@@ -41,6 +41,7 @@ class Model
         $class = get_called_class();
         $db = new $class();
         $conn = ($db::getDatabase())::getConn();
+        empty($where) && $where = '1';
         $stmt = $conn->prepare('SELECT * FROM ' . (($db->_dbname . '.') ?: '') . $db->_table . ' WHERE ' . $where);
         $stmt->execute();
         $rows = (object) $stmt->fetchAll();
