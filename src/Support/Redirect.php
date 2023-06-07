@@ -2,8 +2,6 @@
 
 namespace RauyeMVC\Support;
 
-use Cake\Utility\Inflector;
-
 class Redirect
 {
     private static $url;

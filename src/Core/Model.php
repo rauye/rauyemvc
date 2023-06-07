@@ -2,8 +2,8 @@
 
 namespace RauyeMVC\Core;
 
-use Cake\Utility\Inflector;
 use RauyeMVC\Support\Database;
+use RauyeMVC\Support\Inflector;
 
 class Model
 {
