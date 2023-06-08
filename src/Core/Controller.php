@@ -1,7 +1,9 @@
 <?php
 namespace RauyeMVC\Core;
 
+use Illuminate\Http\Request;
 use RauyeMVC\Config;
+use RauyeMVC\Support\JsonOut;
 
 class Controller
 {
@@ -71,8 +73,16 @@ class Controller
             $debugContent = '<pre>' . ob_get_clean() . '</pre>';
         }
         $message = $errorMessage;
-        require_once "src/View/_templates/errors/{$error}.php";
-        http_response_code($error);
+
+        $request = Request::createFromGlobals();
+        if ($request->isXmlHttpRequest()) {
+            http_response_code($error);
+            JsonOut::createError($message ?? (isset($exception) ? $exception->getMessage() : 'Erro' . $error))
+                ->show();
+        } else {
+            require_once "src/View/_templates/errors/{$error}.php";
+            http_response_code($error);
+        }
         die;
     }
 }

@@ -38,7 +38,7 @@ class JsonOut
     public static function createError($msg = null)
     {
         $self = self::create();
-        $self->add('success', false);
+        $self->add('success', false, true);
         $self->add('message', $msg ?? 'Error performing this operation');
         return $self;
     }

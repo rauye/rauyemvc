@@ -36,13 +36,18 @@ class Model
         return static::$_database;
     }
 
-    public static function getAll($where = '')
+    public static function getAll($where = '', $bindArr = [])
     {
         $class = get_called_class();
         $db = new $class();
         $conn = ($db::getDatabase())::getConn();
         empty($where) && $where = '1';
         $stmt = $conn->prepare('SELECT * FROM ' . (($db->_dbname . '.') ?: '') . $db->_table . ' WHERE ' . $where);
+        if (is_string($bindArr)) {
+            $stmt->execute([$bindArr]);
+        } else {
+            $stmt->execute($bindArr);
+        }
         $stmt->execute();
         $rows = (object) $stmt->fetchAll();
         $obj = [];
