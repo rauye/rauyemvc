@@ -11,9 +11,9 @@ class JsonOut
      */
     private $obj;
 
-    public function add($name, $value)
+    public function add($name, $value, $forceAddEmpty = false)
     {
-        if (!empty($value) or is_null($value)) {
+        if (!empty($value) or is_null($value) or $forceAddEmpty) {
             $this->obj->$name = $value;
         }
         return $this;
