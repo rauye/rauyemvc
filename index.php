@@ -47,16 +47,13 @@ if (empty($page)) {
 }
 $controller = '\\' . Config::$PROJECT_VENDOR_NAME . '\Controller\\' . ucfirst($page) . 'Controller';
 
-if (!file_exists($controller)) {
-//    Controller::loadViewError(404, null, "Controller " . ucfirst($page) . "Controller não encontrado");
-}
-
 try {
     $c = new $controller();
-} catch (Error $e) {
-    if (strpos($e->getMessage(), "Class '$controller' not found") !== false) {
-        Controller::loadViewError(404, $e);
+} catch (Error|Exception $e) {
+    if (strpos($e->getMessage(), "Class \"$controller\" not found") !== false) {
+        Controller::loadViewError(404, $e, "Controller " . ucfirst($page) . "Controller não encontrado");
     }
+    Controller::loadViewError(500, $e);
 }
 
 try {
@@ -79,14 +76,14 @@ try {
 } catch (Error $e) {
     $re = '/Call to undefined method (.*)/m';
     preg_match_all($re, $e->getMessage(), $matches, PREG_SET_ORDER, 0);
-    if ($matches === false) {
+    if ($matches === false || empty($matches)) {
         Controller::loadViewError(400, $e);
     }
     Controller::loadViewError(500, $e);
 } catch (Exception $ex) {
     $re = '/Method (.*) does not exist/m';
     preg_match_all($re, $ex->getMessage(), $matches, PREG_SET_ORDER, 0);
-    if ($matches !== false) {
+    if ($matches !== false && !empty($matches)) {
         Controller::loadViewError(404, $ex);
     }
     Controller::loadViewError(500, $ex);
