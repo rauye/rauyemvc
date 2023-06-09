@@ -98,7 +98,7 @@ class Model
 
     public function Save()
     {
-        if (is_null(static::$_idField)) {
+        if (is_null($this->{static::$_idField})) {
             return $this->Insert();
         }
         return $this->Update();
