@@ -28,6 +28,14 @@ class Model
         }
     }
 
+    private function getDbName()
+    {
+        if (!empty($this->_dbname)) {
+            return $this->_dbname  . '.';
+        }
+        return '';
+    }
+
     protected static function getDatabase()
     {
         if (is_null(static::$_database)) {
@@ -42,7 +50,7 @@ class Model
         $db = new $class();
         $conn = ($db::getDatabase())::getConn();
         empty($where) && $where = '1';
-        $stmt = $conn->prepare('SELECT * FROM ' . (($db->_dbname . '.') ?: '') . $db->_table . ' WHERE ' . $where);
+        $stmt = $conn->prepare('SELECT * FROM ' . $db->getDbName() . $db->_table . ' WHERE ' . $where);
         if (is_string($bindArr)) {
             $stmt->execute([$bindArr]);
         } else {
@@ -71,7 +79,7 @@ class Model
         $conn = (self::getDatabase())::getConn();
         $class = get_called_class();
         $db = new $class();
-        $stmt = $conn->prepare('SELECT * FROM ' . (($db->_dbname . '.') ?: '') . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
+        $stmt = $conn->prepare('SELECT * FROM ' . $db->getDbName() . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
         if (is_string($bindArr)) {
             $stmt->execute([$bindArr]);
         } else {
@@ -130,7 +138,7 @@ class Model
     {
         $id = $this->{static::$_idField};
         unset($this->{static::$_idField});
-        $where = $this->{static::$_idField} . ' = '.$id;
+        $where = static::$_idField . ' = '.$id;
         $query = "UPDATE " . $this->_table . " SET ";
 
         $attr = get_object_vars($this);
