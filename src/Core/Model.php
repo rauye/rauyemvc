@@ -165,7 +165,7 @@ class Model
 
     public function Delete()
     {
-        $where = $this->{static::$_idField} . ' = ' . $this->{static::$_idField};
+        $where = static::$_idField . ' = ' . $this->{static::$_idField};
         unset($this->{static::$_idField});
         $query = "DELETE FROM " . $this->_table . " WHERE " . $where;
         $conn = (self::getDatabase())::getConn();
