@@ -121,7 +121,11 @@ class Model
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
                 $ks .= $k . ",";
-                $vs .= "'" . $v . "',";
+                if (is_null($v)) {
+                    $vs .= "null,";
+                } else {
+                    $vs .= "'" . $v . "',";
+                }
             }
         }
         $ks = rtrim($ks, ',');
