@@ -2,18 +2,21 @@
 
 namespace RauyeMVC\Core;
 
-use Cake\Utility\Inflector;
+use RauyeMVC\Support\Database;
+use RauyeMVC\Support\Inflector;
 
 class Model
 {
+    protected static $_idField = 'id';
     protected $_table = null;
     protected static $_database;
+    protected $_dbname;
 
     public function __construct()
     {
         self::$_database = new Database();
         $this->setTableName();
-        $this->id = null;
+        $this->{static::$_idField} = null;
     }
 
     private function setTableName()
@@ -25,23 +28,39 @@ class Model
         }
     }
 
-    protected static function getDatabase()
+    private function getDbName()
     {
-        if (is_null(self::$_database)) {
-            self::$_database = new Database();
+        if (!empty($this->_dbname)) {
+            return $this->_dbname  . '.';
         }
-        return self::$_database;
+        return '';
     }
 
-    public function getAll($where = '')
+    protected static function getDatabase()
     {
-        $conn = (self::getDatabase())::getConn();
-        $stmt = $conn->prepare('SELECT * FROM ' . $this->_table . ' ' . $where);
+        if (is_null(static::$_database)) {
+            static::$_database = new Database();
+        }
+        return static::$_database;
+    }
+
+    public static function getAll($where = '', $bindArr = [])
+    {
+        $class = get_called_class();
+        $db = new $class();
+        $conn = ($db::getDatabase())::getConn();
+        empty($where) && $where = '1';
+        $stmt = $conn->prepare('SELECT * FROM ' . $db->getDbName() . $db->_table . ' WHERE ' . $where);
+        if (is_string($bindArr)) {
+            $stmt->execute([$bindArr]);
+        } else {
+            $stmt->execute($bindArr);
+        }
         $stmt->execute();
         $rows = (object) $stmt->fetchAll();
         $obj = [];
         foreach ($rows as $row) {
-            $that = $this;
+            $that = clone $db;
             foreach ($row as $k => $v) {
                 $that->$k = $v;
             }
@@ -50,61 +69,86 @@ class Model
         return $obj;
     }
 
+    /**
+     * @param string $where
+     * @param array|string $bindArr
+     * @return $this
+     */
     public static function getFirst($where = '1=1', $bindArr = [])
     {
         $conn = (self::getDatabase())::getConn();
         $class = get_called_class();
         $db = new $class();
-        $stmt = $conn->prepare('SELECT * FROM ' . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
-        $stmt->execute($bindArr);
+        $stmt = $conn->prepare('SELECT * FROM ' . $db->getDbName() . $db->_table . ' WHERE ' . $where . ' LIMIT 1');
+        if (is_string($bindArr)) {
+            $stmt->execute([$bindArr]);
+        } else {
+            $stmt->execute($bindArr);
+        }
         $row = (object) $stmt->fetch();
+        if (is_null($row) or isset($row->scalar)) {
+            return null;
+        }
         foreach ($row as $k => $v) {
             $db->$k = $v;
         }
         return $db;
     }
 
+    /**
+     * @param $id
+     * @return $this
+     */
     public static function getFirstId($id)
     {
-        return self::getFirst('id = ?', [$id]);
+        return self::getFirst(static::$_idField . ' = ?', [$id]);
     }
 
     public function Save()
     {
-        if (is_null($this->id)) {
+        if (is_null($this->{static::$_idField})) {
             return $this->Insert();
         }
         return $this->Update();
     }
 
-    private function Insert()
+    public function Insert()
     {
         $ks = '';
         $vs = '';
-        unset($this->id);
+        unset($this->{static::$_idField});
         $attr = get_object_vars($this);
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
                 $ks .= $k . ",";
-                $vs .= "'" . $v . "',";
+                if (is_null($v)) {
+                    $vs .= "null,";
+                } else {
+                    $vs .= "'" . $v . "',";
+                }
             }
         }
         $ks = rtrim($ks, ',');
         $vs = rtrim($vs, ',');
         $query = "INSERT INTO " . $this->_table . " (" . $ks . ") VALUES (" . $vs . ")";
         $conn = (self::getDatabase())::getConn();
-        return $conn->query($query);
+        $result = $conn->query($query);
+
+        $result and $this->{static::$_idField} = $conn->lastInsertId();
+        return $this;
     }
 
-    private function Update()
+    public function Update()
     {
-        $where = 'id = '.$this->id;
-        unset($this->id);
+        $id = $this->{static::$_idField};
+        unset($this->{static::$_idField});
+        $where = static::$_idField . ' = '.$id;
         $query = "UPDATE " . $this->_table . " SET ";
 
         $attr = get_object_vars($this);
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
+                if (is_null($v)) continue;
                 $query .= $k . "='" . $v . "',";
             }
         }
@@ -112,7 +156,25 @@ class Model
 
         $conn = (self::getDatabase())::getConn();
         $stmt = $conn->prepare($query);
-        return $stmt->execute();
+
+        $this->{static::$_idField} = $id;
+
+        try {
+            $stmt->execute();
+        } catch (\Exception $ex) {
+            var_dump('Erro executando a query: ' . $query);
+            throw $ex;
+        }
+    }
+
+    public function Delete()
+    {
+        $where = static::$_idField . ' = ' . $this->{static::$_idField};
+        unset($this->{static::$_idField});
+        $query = "DELETE FROM " . $this->_table . " WHERE " . $where;
+        $conn = (self::getDatabase())::getConn();
+        $stmt = $conn->query($query);
+        return $this;
     }
 
     public function __call($name, $arguments)

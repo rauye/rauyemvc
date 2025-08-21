@@ -1,13 +1,12 @@
 <?php
 
-namespace RauyeMVC\Core;
+namespace RauyeMVC\Support;
 
 class Session
 {
     public function __construct()
     {
-        $self = new static();
-        $self::start();
+        self::start();
     }
 
     private static function checkStarted()
@@ -33,12 +32,12 @@ class Session
     public static function get($name)
     {
         self::start();
-        return $_SESSION[$name];
+        return $_SESSION[$name] ?? null;
     }
 
     public static function destroy()
     {
-        self::checkStarted() or session_destroy();
+        self::checkStarted() and session_destroy();
         return true;
     }
 }

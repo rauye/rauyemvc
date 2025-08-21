@@ -1,3 +1,0 @@
-<section>
-    Section content
-</section>
