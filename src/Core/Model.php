@@ -148,8 +148,11 @@ class Model
         $attr = get_object_vars($this);
         foreach ($attr as $k => $v) {
             if (substr($k,0, 1) !== '_' and is_string($k)) {
-                if (is_null($v)) continue;
-                $query .= $k . "='" . $v . "',";
+                if (is_null($v)) {
+                    $query .= $k . "=null,";
+                } else {
+                    $query .= $k . "='" . $v . "',";
+                }
             }
         }
         $query = rtrim($query, ',') . ' WHERE ' . $where;
