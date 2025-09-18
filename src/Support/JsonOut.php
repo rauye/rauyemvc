@@ -22,6 +22,7 @@ class JsonOut
     public function show($exit = true)
     {
         if ($exit) {
+            header('Content-type: application/json');
             die(json_encode($this->obj));
         }
         echo json_encode($this->obj);
